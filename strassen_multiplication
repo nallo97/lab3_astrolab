@@ -1,0 +1,47 @@
+#libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+import timeit
+
+#functions
+#Strassen function (size must be 2^n by 2^n)
+
+#running time for Strassen method
+start_2 = timeit.default_timer()
+
+#splitting into 4 matrices
+def f_split(matrix): 
+    row, col = matrix.shape 
+    row2, col2 = row//2, col//2
+    return matrix[:row2, :col2], matrix[:row2, col2:], matrix[row2:, :col2], matrix[row2:, col2:] 
+  
+#function of Strassen
+def f_strassen(matrix_A, matrix_B): 
+    
+    if len(matrix_A) == 1: 
+        return matrix_A * matrix_B 
+    
+    # Splitting into 4 quadrants 
+    matrix_a11, matrix_a12, matrix_a21, matrix_a22 = f_split(matrix_A) 
+    matrix_b11, matrix_b12, matrix_b21, matrix_b22 = f_split(matrix_B) 
+  
+    # Computing the 7 products by using recursion (M1, M2, M3, M4, M5, M6, M7)
+    M1 = f_strassen(matrix_a11 + matrix_a22, matrix_b11 + matrix_b22)   
+    M2 = f_strassen(matrix_a21 + matrix_a22, matrix_b11)       
+    M3 = f_strassen(matrix_a11, matrix_b12 - matrix_b22)         
+    M4 = f_strassen(matrix_a22, matrix_b21 - matrix_b11)         
+    M5 = f_strassen(matrix_a11 + matrix_a12, matrix_b22)         
+    M6 = f_strassen(matrix_a21 - matrix_a11, matrix_b11 + matrix_b12)   
+    M7 = f_strassen(matrix_a12 - matrix_a22, matrix_b21 + matrix_b22)   
+  
+    # Computing the values of for the resultant matrix C 
+    C11 = M1 + M4 - M5 + M7   
+    C12 = M3 + M5            
+    C21 = M2 + M4             
+    C22 = M1 - M2 + M3 + M6   
+  
+    # Combining the 4 quadrants into a single matrix by stacking horizontally and vertically. 
+    matrix_C = np.vstack((np.hstack((C11, C12)), np.hstack((C21, C22))))  
+  
+    return matrix_C
