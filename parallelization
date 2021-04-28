@@ -1,0 +1,37 @@
+#still trying to make it work for our data generator
+def dataindx_sqrt(data, index):
+    return data[index]**2
+
+
+dlen = 20
+#passing the index
+sendbuf = None
+if rank == 0:
+    
+    #data = np.random.normal(0, 1, npoints)
+    data = np.arange(20, dtype = 'i')
+
+else:
+    data = np.empty(dlen, dtype = 'i')
+    #sendbuf = np.empty([size,dlen], dtype='i')
+    #for i in range(size):
+    #    sendbuf[i,:] = data
+
+values = np.zeros(dlen, dtype = 'f')
+recvbuf = np.empty(dlen, dtype='i')
+comm.Bcast(data, root=0)
+#comm.Scatter(sendbuf, recvbuf, root=0)
+#print(data, rank)
+#assert np.allclose(recvbuf, rank)
+for i in range(dlen):
+    if i%size == rank:
+        values[i] = dataindx_sqrt(data, i)
+        
+recvbuf2 = None
+if rank == 0:
+    recvbuf2 = np.empty([size, dlen], dtype='f')
+    
+comm.Gather(values,recvbuf2, root = 0)
+if rank == 0:
+    for i in range(size):
+        print(np.sum(recvbuf2, axis=0))
