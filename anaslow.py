@@ -4,7 +4,7 @@ import healpy as hp
 import pickle
 from scipy import special
 
-fin_nside = 512
+fin_nside = 128
 
 
 fullmap = fits.open('./data/COM_CMB_IQU-smica_2048_R3.00_hm1.fits')
@@ -31,8 +31,8 @@ print("lmax = ", lmax)
 for l in range(lmax):
     print("On l:", l)
     lilm = []
-    maxl = min(l, 10)
-    for m in range(-maxl, maxl+1):
+#     maxl = min(l, 10)
+    for m in range(-l, l+1):
         mval = np.sum(np.conj(special.sph_harm(m, l, anglist[:,0], anglist[:,1]))*lesspretty)
         lilm.append(mval)
     A_lm.append(lilm)
